@@ -205,8 +205,8 @@ method /IWBEP/IF_MGW_CORE_SRV_RUNTIME~READ_STREAM.
 
   " output
   CLEAR ls_header.
-  ls_header-name = 'content-disposition'.
-  ls_header-value = 'outline; filename="' && ls_zfile-filename && '.pdf"'.
+  ls_header-name  = 'Content-Disposition'.
+  ls_header-value = |attachment; filename="{ ls_zfile-filename }"|.
   set_header( ls_header ).
 
   ls_stream-value     = ls_zfile-content.
@@ -309,8 +309,18 @@ method FILESET_GET_ENTITYSET.
 
   CLEAR lt_zfile.
 
-  SELECT *
-    INTO TABLE lt_zfile
+  SELECT fileid
+         erdat
+         erzet
+         ernam
+         filename
+         filesize
+         mimetype
+
+         " Não carregando content na listagem para não ficar pesado,
+         " quem precisar do conteúdo, deve fazer uma requisição específica
+         "content
+    INTO CORRESPONDING FIELDS OF TABLE lt_zfile
     FROM zfile.
 
   LOOP AT lt_zfile INTO ls_zfile.
